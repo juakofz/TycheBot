@@ -11,10 +11,7 @@
                       ptz_pan_position_controller
                       ptz_tilt_position_controller
                       joint_read_state_controller
-                      "/>
-  
-  <!-- ptz_pan_position_controller -->
-  <!-- ptz_tilt_position_controller -->                    
+                      "/>                   
                       
 
   <!-- Load joint controller configurations from YAML file to parameter server -->

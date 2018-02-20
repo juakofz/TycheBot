@@ -24,7 +24,7 @@
          
   <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-        args="-urdf -model tychebot_description -param robot_description"/>
+        args="-urdf -x -2 -model tychebot_description -param robot_description"/>
 
     <!-- Show in Rviz   -->
   <node name="rviz" pkg="rviz" type="rviz"/> 

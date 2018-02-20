@@ -23,7 +23,7 @@
       <xacro:insert_block name="origin" />
       <axis xyz="0 1 0" rpy="0 0 0" />
       <limit effort="100" velocity="100"/>
-      <joint_properties damping="0.0" friction="0.0"/>
+      <joint_properties damping="0.0" friction="0.1"/>
     </joint>
   
     <link name="${name}_wheel">
@@ -54,6 +54,14 @@
         <geometry>
           <cylinder length="${wheel_height}" radius="${wheel_radius}" />
         </geometry>
+        <!--surface>
+          <friction>
+            <ode>
+              <mu>10.0</mu>
+              <mu2>10.0</mu2>
+            </ode>
+          </friction>
+        </surface-->
       </collision>    
       <inertial>
         <mass value="${wheel_mass}" />
@@ -76,11 +84,13 @@
 
 
     <gazebo reference="${name}_wheel">
-			<mu1 value="1.0"/>
-			<mu2 value="1.0"/>
-			<kp value="10000000.0" />
-			<kd value="1.0" />
-			<fdir1 value="1 0 0"/>
+			<!--mu1 value="10.0"/>
+			<mu2 value="10"/>
+			<kp value="10.0" />
+			<kd value="10.0" />
+			<fdir1 value="1 0 0"/-->
+      <maxVel>1.0</maxVel>
+      <minDepth>0.01</minDepth>
       <turnGravityOff>false</turnGravityOff>
     </gazebo>
     
