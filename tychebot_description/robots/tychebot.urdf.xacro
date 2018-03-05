@@ -78,7 +78,7 @@
   <!-- Hokuyo laser sensors can be parametized with min_angle and max_angle e.g: -->
   <!--xacro:sensor_hokuyo_utm30lx name="hokuyo_base" parent="base_link" min_angle="2.35" max_angle="-2.35"-->
     
-	<xacro:sensor_hokuyo_utm30lx name="hokuyo" parent="base_link" min_angle="3.14" max_angle="-3.14">
+	<xacro:sensor_hokuyo_utm30lx name="hokuyo" parent="base_link" min_angle="2.87" max_angle="-2.87">
 		<origin xyz="0.0 0.0 0.33" rpy="0 0 0"/>
 	</xacro:sensor_hokuyo_utm30lx>
   
@@ -86,7 +86,7 @@
 		<origin xyz="-0.0 0.0 2.33" rpy="0 0 0"/>
 	</xacro:sensor_hokuyo_urg04lx-->
   	
-  	<!-- Camera is tilted weirly, defaul was 15* -->
+  	<!-- Camera is tilted weirdly, defaul was 15* -->
 	<!--xacro:sensor_axis name="camera" parent="base_link">
 		<origin xyz="0.19 0 0.17" rpy="0 ${15*PI/180} 0"/>
 	</xacro:sensor_axis-->

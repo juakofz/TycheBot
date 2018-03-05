@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+	<node name="slam_gmapping" pkg="gmapping" type="slam_gmapping">
+		<remap from="scan" to="hokuyo/scan"/>
+    	<param name="maxUrange" value="25.0"/>
+		<param name="maxRange" value="35.0"/>
+		<param name="linearUpdate" value="0.5"/>
+    	<param name="angularUpdate" value="0.436"/>
+		<param name="temporalUpdate" value="3.0"/>
+	</node>
+
+</launch>
