@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+	<node name="slam_gmapping_tychebot" pkg="gmapping" type="slam_gmapping">
+		<param name="scan" value="hokuyo/scan"/>
+		<param name="maxRange" value="30"/>
+	</node>
+
+</launch>
