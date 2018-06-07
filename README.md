@@ -20,6 +20,11 @@ Para lanzar el robot con en willow garage con navegación en mapa fijo, podemos 
 roslaunch tychebot_common/launch/tychebot_complete.launch move_base_enabled:=true amcl_and_mapserver_enabled:=true
 ```
 
+Para lanzar el robot en labrob con navegación en mapa fijo, podemos utilizar:
+```
+roslaunch tychebot_common/launch/tychebot_complete_labrob.launch move_base_enabled:=true amcl_and_mapserver_enabled:=true
+```
+
 ### Paquete tychebot_description
 Este paquete contiene los modelos 3D y archivos URDF de descripción del robot.
 
