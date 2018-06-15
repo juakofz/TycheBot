@@ -9,19 +9,16 @@ Trabajo del Laboratorio de Robótica y Automática del grupo Tyche
 
 ## Descripción detallada
 
+### Paquete tychebot_common
+Este paquete contiene los launchfiles necesarios para el control del robot.
+
+#### Launchfiles
+Están separados en carpetas según su función. Se puede lanzar el robot desde tychebot_complete.launch utilizando los parámetros incluidos.
+
+Para lanzar el robot con en willow garage con navegación en mapa fijo, podemos utilizar:
+```
+roslaunch tychebot_common/launch/tychebot_complete.launch move_base_enabled:=true amcl_and_mapserver_enabled:=true
+```
+
 ### Paquete tychebot_description
-Este paquete contiene los modelos 3D y archivos básicos del robot, así como launchfiles para visualización en Rviz y Gazebo.
-#### Launchfiles
-- tychebot_rviz.launch: lanza el robot en el visualizador Rviz.
-- tychebot_gazebo.launch: lanza el robot y los sensores en Gazebo.
-- tychebot_labrob.launch: lanza el robot y los sensores directamente sobre el mundo con los objetos, y la visualización en Rviz.
-- tychebot_slam.launch: lanza el nodo de SLAM (pendiente de mover a tychebot_control).
-- tychebot_slam.xml: parámetros de SLAM.
-
-### Paquete tychebot_control
-Este paquete contiene las utilidades de control y navegación (actualmente navegación 2D y SLAM).
-#### Launchfiles
-- amcl.launch: lanza el nodo amcl para su uso en navegación 2D con mapa fijo.
-- tychebot_2dnav.launch: lanza el navigation stack y carga los archivos de configuración pertinentes.
-- tychebot_control.launch: lanza el control de las ruedas y la cámara ptz.
-
+Este paquete contiene los modelos 3D y archivos URDF de descripción del robot.
