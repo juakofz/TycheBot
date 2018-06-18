@@ -7,6 +7,7 @@
 	and they are (or not) launched for all robots-->
 	<arg name="launch_rviz" default="true"/>
 	<arg name="gazebo_world" default="$(find labrob_gazebo)/worlds/final_test.world"/>
+	<arg name="rviz_profile" default="$(find tychebot_common)/rviz/tychebot_exploration.rviz"/>
 	
 	<!-- Robot config arguments-->
 	<arg name="map_file" default="willow_garage/willow_garage.yaml"/>
@@ -18,6 +19,7 @@
 	<include file="$(find tychebot_common)/launch/simulation/tychebot_gazebo.launch">
 		<!-- general args -->
 		<arg name="launch_rviz" value="$(arg launch_rviz)"/>
+		<arg name="rviz_profile" value="$(arg rviz_profile)"/>
 		<arg name="gazebo_world" value="$(arg gazebo_world)"/>
 		<!-- robot_a args -->
 		<arg name="map_file" value="$(arg map_file)"/>
@@ -27,5 +29,6 @@
 		<arg name="amcl_and_mapserver_enabled" value="$(arg amcl_and_mapserver_enabled)"/>
 	</include>
 
+	<include file="$(find tychebot_common)/launch/navigation/exploration.launch"/>
 
 </launch>

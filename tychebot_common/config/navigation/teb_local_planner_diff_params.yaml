@@ -30,7 +30,7 @@ TebLocalPlannerROS:
   acc_lim_y: 0 # not used, is differential
   acc_lim_x: 0.2
   acc_lim_theta: 0.2
-  min_turning_radius: 0.0
+  min_turning_radius: 0.1
   wheelbase: 0.0 # not used, is differential
   cmd_angle_instead_rotvel: false # not used, is differential
   footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
