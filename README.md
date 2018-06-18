@@ -12,6 +12,12 @@ Trabajo del Laboratorio de Robótica y Automática del grupo Tyche
 ### Paquete tychebot_common
 Este paquete contiene los launchfiles necesarios para el control del robot.
 
+#### Nodos:
+ - base_to_map_tf: tf listener para obtener la posición relativa al mapa.
+ ```
+rosrun tychebot_common base_to_map_tf
+```
+
 #### Launchfiles
 Están separados en carpetas según su función. Se puede lanzar el robot desde tychebot_complete.launch utilizando los parámetros incluidos.
 
