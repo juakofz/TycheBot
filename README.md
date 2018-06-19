@@ -6,7 +6,8 @@ Trabajo del Laboratorio de Robótica y Automática del grupo Tyche
 - robotnik_sensors: paquete con descripciones estándar de diversos sensores para ROS y Gazebo.
 - gmapping: paquete de SLAM.
 - navigation: paquete de navegación: mapas de coste, generación de trayectorias, control, etc.
-- frontier_exploration: generación de fronteras de exploración.
+- frontier_exploration: generación de fronteras de exploración (versión 1)
+- explore_lite: mismo propósito, más ligero y senciollo (versión 2)
 - fiducial_msgs: utilizado para la detección de códigos ArUco.
 
 
