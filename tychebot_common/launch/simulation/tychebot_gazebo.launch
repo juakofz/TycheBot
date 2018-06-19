@@ -7,7 +7,7 @@
 	<arg name="rviz_profile" default="$(find tychebot_common)/rviz/tychebot_a.rviz"/>
 	<arg name="debug" default="false"/>
 	<arg name="ros_planar_move_plugin" default="false"/>
-	
+	<arg name="aruco" default="1"/>
 
 	<!--params of the robot-->
 	<arg name="id_robot" default="tychebot"/>
@@ -36,15 +36,21 @@
 		<arg name="ros_planar_move_plugin" value="$(arg ros_planar_move_plugin)"/>
 	</include>
 
-	
-	<!-- gazebo simulation and rviz visualization-->
-	<include file="$(find tychebot_common)/launch/simulation/gazebo_rviz.launch">		
+	<!-- labrob launch files -->
+	<include if="$(eval gazebo_world == 'labrob')" file="$(find tychebot_common)/launch/simulation/gazebo_rviz_labrob.launch">		
+		<arg name="launch_rviz" value="true"/>
+		<arg name="rviz_profile" value="$(arg rviz_profile)"/>
+		<arg name="aruco" value="$(arg aruco)"/>
+	</include>
+
+	<!-- Normal gazebo simulation and rviz visualization-->
+	<include unless="$(eval gazebo_world == 'labrob')" file="$(find tychebot_common)/launch/simulation/gazebo_rviz.launch">		
 		<arg name="launch_rviz" value="$(arg launch_rviz)"/>
 		<arg name="rviz_profile" value="$(arg rviz_profile)"/>
 		<arg name="world" value="$(arg gazebo_world)"/>
 		<arg name="debug" value="$(arg debug)"/>
 	</include>
-  
+
 </launch>	
 	
 

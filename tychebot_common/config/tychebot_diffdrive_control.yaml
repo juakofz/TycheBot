@@ -1,27 +1,27 @@
-joint_blw_velocity_controller:
-  type: velocity_controllers/JointVelocityController
-  joint: joint_back_left_wheel
-joint_brw_velocity_controller:
-  type: velocity_controllers/JointVelocityController
-  joint: joint_back_right_wheel
-joint_frw_velocity_controller:
-  type: velocity_controllers/JointVelocityController
-  joint: joint_front_right_wheel
-joint_flw_velocity_controller:
-  type: velocity_controllers/JointVelocityController
-  joint: joint_front_left_wheel
+  joint_blw_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: tychebot_back_left_wheel_joint
+  joint_brw_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: tychebot_back_right_wheel_joint
+  joint_frw_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: tychebot_front_right_wheel_joint
+  joint_flw_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: tychebot_front_left_wheel_joint
 
-#joint_pan_position_controller:
-#  type: position_controllers/JointPositionController
-#  joint: joint_camera_pan
-#joint_tilt_position_controller:
-#  type: position_controllers/JointPositionController
-#  joint: joint_camera_tilt
+  joint_pan_position_controller:
+    type: position_controllers/JointPositionController
+    joint: tychebot_front_ptz_camera_pan_joint
+  joint_tilt_position_controller:
+    type: position_controllers/JointPositionController
+    joint: tychebot_front_ptz_camera_tilt_joint
 
-robotnik_base_control:
+  robotnik_base_control:
     type        : "diff_drive_controller/DiffDriveController"
-    left_wheel  : ['joint_front_left_wheel', 'joint_back_left_wheel']
-    right_wheel : ['joint_front_right_wheel', 'joint_back_right_wheel']
+    left_wheel  : ['tychebot_front_left_wheel_joint', 'tychebot_back_left_wheel_joint']
+    right_wheel : ['tychebot_front_right_wheel_joint', 'tychebot_back_right_wheel_joint']
     publish_rate: 50.0               # default: 50
     pose_covariance_diagonal : [0.001, 0.001, 0.0, 0.0, 0.0, 1000.0]
     twist_covariance_diagonal: [0.001, 0.001, 0.0, 0.0, 0.0, 1000.0]
@@ -29,13 +29,14 @@ robotnik_base_control:
     # Wheel separation and diameter. These are both optional.
     # diff_drive_controller will attempt to read either one or both from the
     # URDF if not specified as a parameter - real #0.566 for skid - 0.8 
+    
     # working in sim :
-    # wheel_separation : 1.2
-    # wheel_radius : 0.110
+    wheel_separation : 1.2
+    wheel_radius : 0.110
 
     # empirical in real robot
-    wheel_separation : 0.955        #0.95 -0.10 rad / rev
-    wheel_radius : 0.088    # this is empirical value, but is not corresponding with the physical value 
+    # wheel_separation : 0.955        #0.95 -0.10 rad / rev
+    # wheel_radius : 0.088    # this is empirical value, but is not corresponding with the physical value 
 
     # Wheel separation and radius multipliers
     wheel_separation_multiplier: 1.0 # default: 1.0
@@ -46,7 +47,7 @@ robotnik_base_control:
     cmd_vel        : '/robotnik_base_control/cmd_vel'
 
     # Base frame_id
-    base_frame_id: base_footprint #default: base_link
+    base_frame_id: tychebot_base_footprint #default: base_link
 
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
@@ -66,9 +67,6 @@ robotnik_base_control:
         max_acceleration       : 6.0  # rad/s^2
 
 
-joint_read_state_controller:
-  type: joint_state_controller/JointStateController 
-  publish_rate: 100.0
-
-
-
+  joint_read_state_controller:
+    type: joint_state_controller/JointStateController 
+    publish_rate: 100.0

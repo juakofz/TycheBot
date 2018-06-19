@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+	<include file="$(find aruco_detect)/launch/aruco_detect.launch">
+		<arg name="camera" default="tychebot/tychebot_front_ptz_camera"/>
+  		<arg name="image" default="image_raw"/>
+  	</include>
+	<node name="target_aruco" pkg="aruco_detect" type="target_aruco"/>
+</launch>

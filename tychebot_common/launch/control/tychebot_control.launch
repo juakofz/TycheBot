@@ -34,7 +34,7 @@
 
     <!-- Simulation - Load joint controller configurations from YAML file to parameter server -->
   <group if="$(arg sim)">	  	  
-	  <rosparam file="$(find tychebot_common)/config/$(arg prefix)control.yaml" command="load"/>  
+	  <rosparam file="$(find tychebot_common)/config/tychebot_diffdrive_control.yaml" command="load"/>  
 	  
 	  <!-- if robot_localization node is launched the controller must not publish the odom tf-->
 	  <param if="$(arg launch_robot_localization)" name="robotnik_base_control/enable_odom_tf" value="false"/>	 
@@ -51,6 +51,8 @@
 		output="screen" args="	
 		  robotnik_base_control
 		  joint_read_state_controller 
+		  joint_pan_position_controller
+		  joint_tilt_position_controller
 		  ">
 	  </node>	  
 
