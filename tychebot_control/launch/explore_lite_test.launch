@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-	<node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
+	<node pkg="explore_lite_test" type="explore" respawn="false" name="explore" output="screen">
 	  <param name="robot_base_frame" value="/tychebot_base_link"/>
 	  <param name="costmap_topic" value="/tychebot/map"/>
 	  <!--param name="costmap_updates_topic" value="/tychebot/move_base/global_costmap/costmap_updates"/-->
