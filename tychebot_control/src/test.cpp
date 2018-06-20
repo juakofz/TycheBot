@@ -4,6 +4,7 @@
 #include <move_base_msgs/MoveBaseActionGoal.h>
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/Float64.h>
+#include <tychebot_control/objectArray.h>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ ros::Publisher pub_camera_pan; //Camera pan
 geometry_msgs::Pose msg_pose; //Current position and orientation
 move_base_msgs::MoveBaseActionGoal msg_explore_lite_goal; //Goal provided by modified explore_lite node
 std_msgs::Float64 msg_camera_pan; //Camera pan
+tychebot_control::objectArray test; //Behaves as a std::vector
 
 //Callbacks
 void callback_pose(const geometry_msgs::Pose::ConstPtr&);
