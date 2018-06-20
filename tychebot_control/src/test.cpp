@@ -49,18 +49,22 @@ int main(int argc, char **argv)
 	{
 		ros::spinOnce();
 
-
-
 		//1 - Navigation loop
-		//1.0 - Read inputs
-		//1.1 - Evaluate objectives
-		//1.2 - Send objective: coin, explore, or mark
+
+		//1.0 - Read inputs: via callbacks
+
+		//1.1 - Evaluate objectives:
+		/*1st aruco, then coins if nearby and available,
+		then explore untill recognised >>half of the objects
+		*/
+
+		//1.2 - Send objective: coin, explore, or mark: publish to move_base
 
 
 		//2 - Identification loop
-		//2.1 - Aim camera
-		//2.2 - Wait for identication/timeout
 
+		/*Aim camera to nearest unidentified obstacle in camera range.
+		Wait for identication/timeout before objective change*/
 
 
 		//Goal test with modified explore_lite
