@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="tychebot" xmlns:xacro="http://www.ros.org/wiki/xacro"> 
+<robot name="summit_xl" xmlns:xacro="http://www.ros.org/wiki/xacro"> 
 
 
 	<!-- ***************** -->
@@ -9,24 +9,20 @@
 	<!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
 
 	<!-- Import summit XL base elements -->
-	<xacro:include filename="$(find tychebot_description)/urdf/bases/summit_xl_base.urdf.xacro" />
+	<xacro:include filename="$(find summit_xl_description)/urdf/bases/summit_xl_base.urdf.xacro" />
   
 	<!-- Import summit XL wheels -->
-	<xacro:include filename="$(find tychebot_description)/urdf/wheels/rubber_wheel.urdf.xacro" />
+	<xacro:include filename="$(find summit_xl_description)/urdf/wheels/rubber_wheel.urdf.xacro" />
     
 	<!-- Import all available sensors -->
 	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
-  
-  	<!-- Import ptz camera -->
-	<xacro:include filename="$(find tychebot_description)/urdf/sensors/ptz_camera.urdf.xacro" />
-  
-  
-	<!-- ***************** -->
-	<!-- Global parameters -->
-	<!-- ***************** -->
+
+	<!-- Import custom ptz_camera -->
+	<xacro:include filename="$(find tychebot_description)/urdf/sensors/axis_ptz.urdf.xacro" />
+
   
 	<xacro:property name="PI" value="3.1415926535897931"/>
-  
+	  
 	<!-- Wheel parameters -->
 	<xacro:property name="wheel_offset_x" value="0.229" />    <!-- x,y,z in translation from base_link to the center of the wheel -->
 	<xacro:property name="wheel_offset_y" value="0.234" />    
@@ -35,79 +31,74 @@
 	<!-- Flag to select the high or low quality model -->
 	<xacro:property name="hq" value="true" />
 
+	<xacro:arg name="prefix" default="tychebot"/>
+	<xacro:arg name="ros_planar_move_plugin" default="false"/>
+
+		
+    <xacro:macro name="summit_xl" params="prefix publish_bf hq">
+
+		<!-- *************** -->
+		<!-- Robots Elements -->
+		<!-- *************** -->
+
+		<!-- Here we create the robot elements using the xacro:macros imported at the beggining of this file -->
+
+		<!-- Summit XL base -->
+		<xacro:summit_xl_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+
+		<xacro:rubber_wheel prefix="$(arg prefix)front_right" parent="$(arg prefix)base_link" reflect="false" hq="${hq}">
+			<origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:rubber_wheel>
+	  
+		<xacro:rubber_wheel prefix="$(arg prefix)front_left" parent="$(arg prefix)base_link" reflect="true" hq="${hq}">
+			<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:rubber_wheel>
+	  
+		<xacro:rubber_wheel prefix="$(arg prefix)back_left" parent="$(arg prefix)base_link" reflect="true" hq="${hq}">
+			<origin xyz="-${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:rubber_wheel>
+	  
+		<xacro:rubber_wheel prefix="$(arg prefix)back_right" parent="$(arg prefix)base_link" reflect="false" hq="${hq}">
+			<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:rubber_wheel>
+        <!-- IMU -->
+		<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link">
+			<origin xyz="-0.18 0.0 0.170" rpy="0 0 0"/>
+		</xacro:sensor_imu_hector>
+
+		<!-- 2d laser -->
+		<xacro:property name="laser_limit" value="${165*PI/180}"/>
+		<xacro:sensor_hokuyo_ust10lx prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" prefix_topic="front_laser" min_angle="${laser_limit}" max_angle="${-laser_limit}">
+			<origin xyz="0.0 0.0 0.33" rpy="0 0 0"/>
+		</xacro:sensor_hokuyo_ust10lx>
+
+		<!-- ptz camera model-->
+		<xacro:sensor_axis_ptz prefix="$(arg prefix)front_ptz_camera" parent="$(arg prefix)base_link">
+			<origin xyz="0.19 0 0.26" rpy="0 ${15*PI/180} 0"/>		
+		</xacro:sensor_axis_ptz>
 
 
-	<!-- *************** -->
-	<!-- Robots Elements -->
-	<!-- *************** -->
+	    <!-- RGBD -->
+	    <!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)front_ptz_camera_optical_frame_link" prefix_topic="front_rgbd_camera">
+			<origin xyz="0 0 0" rpy="${90*PI/180} 0 0"/> 
+		</xacro:sensor_orbbec_astra--> 
+	    <!-- GPS -->
+	    <xacro:sensor_gps prefix="$(arg prefix)gps" parent="$(arg prefix)base_link">
+			<origin xyz="-0.22 0 0.275" rpy="0 0 0"/>
+		</xacro:sensor_gps>
+	    
+		
+   </xacro:macro>
+   
+   <!-- Gazebo ros control pluggins -->
+   <xacro:ros_control/>
+   
+   <xacro:if value="$(arg ros_planar_move_plugin)">
+	   <xacro:omni_steering prefix="$(arg prefix)" publish_tf="false"/>
+   </xacro:if>
+   
+   <xacro:summit_xl prefix="$(arg prefix)" publish_bf="true" hq="true"/>
 
-	<!-- Here we create the robot elements using the xacro:macros imported at the beggining of this file -->
-
-	<!-- Summit XL base -->
-	<xacro:summit_xl_base name="summit_xl_base" publish_bf="true" hq="${hq}" />
-  
-	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control/>
 	
-	<!-- Gazebo skid steering pluggins -->
-	<!-- xacro:ros_force_based_move broadcastOdomTF="1"/ -->
-	<xacro:skid_steering broadcastOdomTF="1"/>
-  
-	<!-- WHEELS -->
-
-	<xacro:rubber_wheel name="front_right" parent="base_link" reflect="false" hq="${hq}">
-		<origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel>
-  
-	<xacro:rubber_wheel name="front_left" parent="base_link" reflect="true" hq="${hq}">
-		<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel>
-  
-	<xacro:rubber_wheel name="back_left" parent="base_link" reflect="true" hq="${hq}">
-		<origin xyz="-${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel>
-  
-	<xacro:rubber_wheel name="back_right" parent="base_link" reflect="false" hq="${hq}">
-		<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel>
-
-
-
-	<!-- SENSORS -->
-
-  <!-- Hokuyo laser sensors can be parametized with min_angle and max_angle e.g: -->
-  <!--xacro:sensor_hokuyo_utm30lx name="hokuyo_base" parent="base_link" min_angle="2.35" max_angle="-2.35"-->
-    
-	<xacro:sensor_hokuyo_utm30lx name="hokuyo" parent="base_link" min_angle="2.87" max_angle="-2.87">
-		<origin xyz="0.0 0.0 0.33" rpy="0 0 0"/>
-	</xacro:sensor_hokuyo_utm30lx>
-  
-	<!--xacro:sensor_hokuyo_urg04lx name="hokuyo_base" parent="base_link">
-		<origin xyz="-0.0 0.0 2.33" rpy="0 0 0"/>
-	</xacro:sensor_hokuyo_urg04lx-->
-  	
-  	<!-- Camera is tilted weirdly, defaul was 15* -->
-	<!--xacro:sensor_axis name="camera" parent="base_link">
-		<origin xyz="0.19 0 0.17" rpy="0 ${15*PI/180} 0"/>
-	</xacro:sensor_axis-->
-
-	<xacro:sensor_imu_hector name="imu" parent="base_link">
-		<origin xyz="-0.18 0.0 0.170" rpy="0 0 0"/>
-	</xacro:sensor_imu_hector>
-  
-	<!--xacro:sensor_orbbec_astra name="orbbec_astra" parent="base_link">
-		<origin xyz="0.324 0.012 0.172" rpy="0 0 0"/> 
-	</xacro:sensor_orbbec_astra-->
-
-	<xacro:ptz_camera prefix="ptz_camera" parent="base_link">
-		<origin xyz="0.19 0 0.27" rpy="0 ${15*PI/180} 0"/>
-	</xacro:ptz_camera>
-
-	<!--gazebo>
-	  <plugin name="tychebot_gazebo_ros_control" filename="libgazebo_ros_control.so">
-	    <robotNamespace>/tychebot</robotNamespace>
-	  </plugin>
-	</gazebo-->
-
 </robot>
 

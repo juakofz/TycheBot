@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- roslaunch arguments --> 
+	<arg name="launch_rviz" default="true"/>
+	<arg name="rviz_profile" default="$(find tychebot_common)/rviz/tychebot_a.rviz"/>
+	<arg name="aruco" default="1"/>
+	<arg name="gazebo_wait" default="5"/>
+
+	<!-- Launch empty labrob world -->
+	<include file="$(find labrob_gazebo)/launch/sim_world.launch"/>
+
+	<!-- Populate world with objets. Using delayed roslaunch script to wait untill gazebo is online (3 sec) -->
+  	<node name="timed_roslaunch" pkg="tychebot_common" type="timed_roslaunch.sh" args="$(arg gazebo_wait) labrob_gazebo plugin_sim.launch aruco:=$(arg aruco)" output="screen">
+	 </node>
+
+	<!-- Populate with objects
+	<include file="$(find labrob_gazebo)/launch/plugin_sim.launch">
+		<param name="ArucoId" value="$(arg aruco)"/>
+	</include>  -->
+	
+	<!-- launch rviz -->
+	<node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true" args="-d $(arg rviz_profile)"/>
+
+	
+	
+</launch>
