@@ -43,6 +43,7 @@ enum objectClass{
   INDEFINIDO_R,
   INDEFINIDO_K,
 
+
   MONEDA,
   OBSTACULO,
 

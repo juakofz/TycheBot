@@ -1,6 +1,6 @@
 
 #include "ImageClasses.hh"
-
+#include "deteccion.hh"
 
     void ImageRGB::imageCbRGB(const sensor_msgs::ImageConstPtr& msg)
       {
@@ -16,6 +16,8 @@
           ROS_ERROR("cv_bridge exception: %s", e.what());
           return;
         }
+
+        //imageCallbackRGB(cv_ptr->image);
 
         objects = processImg(cv_ptr->image, &matRGB);
         Mat alturas = Mat::zeros(matRGB.rows, matRGB.cols, CV_8UC1);
@@ -150,22 +152,31 @@ void ImageRGB::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& map)
 
   upsideDownMat(mapa);
   cv::Point center(mapa.cols/2, mapa.rows/2);
-  int size = 500;
+  //xInitRobot = 8;
+  //yInitRobot = -8;
+  xInitRobot =0;
+  yInitRobot = 0;
+  //cv::Point center(mapa.cols/2 + xInitRobot/resMap, mapa.rows/2 + yInitRobot/resMap);
+  int size = 750;
   cv::Rect myROI(center.x - size/2, center.y - size/2, size, size);
   cv::Mat croppedMap = mapa(myROI);
 
-  mapRaw = croppedMap.clone();
-  //cv::resize(croppedMap, croppedMap, cv::Size(), 0.5, 0.5, cv::INTER_AREA);
-  //ROS_INFO("Size = [%d, %d]", map->info.height, map->info.width);
-  /*cv::imshow(MAP_WINDOW, croppedMap);
+  //cv::resize(croppedMap, croppedMap, cv::Size(), 0.75, 0.75, cv::INTER_AREA);
 
-  cv::imwrite("mapaCompleto.png", mapa);
-  cv::imwrite("mapaParcial.png", croppedMap);*/
+  mapRaw = croppedMap.clone();
+  /*cv::Mat littleMap;
+  cv::resize(mapa, littleMap, cv::Size(), 0.25, 0.25, cv::INTER_AREA);
+  //ROS_INFO("Size = [%d, %d]", map->info.height, map->info.width);
+  cv::imshow("all map", littleMap);*/
+
+  //cv::imwrite("mapaCompleto.png", mapa);
+  //cv::imwrite("mapaParcial.png", croppedMap);
   contornos = findMapContours(croppedMap);
   //updateContours(detectedCon);
 
   mapC = croppedMap;
-  dataMap.setMap(mapRaw, resMap, matRGB.cols);
+  if(!dataMap.isSet()) {dataMap.setMap(mapRaw, resMap, matRGB.cols);}
+  dataMap.updateMap(contornos);
   //cv::waitKey(30);
 }
 
@@ -196,8 +207,10 @@ void ImageRGB::tfCallback(const geometry_msgs::Pose::ConstPtr& tf)
       //int x = (int)(((tf->pose.pose.position.x/resMap) +0.5) + mapRaw.cols/2) ;
       //int y = (int)(-((tf->pose.pose.position.y/resMap) +0.5) + mapRaw.cols/2) ;
 
-      int x = (int)(((xP/resMap)) + mapRaw.cols/2) ;
-      int y = (int)(-((yP/resMap)) + mapRaw.rows/2 - 0.2/resMap ) ;
+      //int x = (int)(((xP/resMap)) + mapa.cols/2 - xInitRobot/resMap) ;
+      //int y = (int)(-((yP/resMap)) + mapa.rows/2 - yInitRobot/resMap ) ;
+      int x = (int)(((xP/resMap)) + mapRaw.cols/2 ) ;
+      int y = (int)(-((yP/resMap)) + mapRaw.rows/2 ) ;
       Eje mapa1(MUNDO, MAPA, Point2(mapRaw.cols/2,  mapRaw.rows/2, MUNDO), 0);
       Eje robot(MUNDO, ROBOT, Point2(x, y, MUNDO), yaw + M_PI/2 );
       Eje mundo(MUNDO, MUNDO, Point2(0, 0, MUNDO), 0);
@@ -237,13 +250,16 @@ void ImageRGB::tfCallback(const geometry_msgs::Pose::ConstPtr& tf)
       {
         Point2 p = it->first;
         mapa.trasladar(&p);
-        data.pose.x = p.getX();
-        data.pose.y = p.getY();
+        data.pose.x = p.getX() * resMap;
+        data.pose.y = p.getY() * resMap;
         data.pose.z = 0;
 
         int type = (int)(it->second);
-        data.type = (uint8_t)(type);
-        msg.objects.push_back(data);
+        if(type<= 18)
+        {
+          data.type = (uint8_t)(type);
+          msg.objects.push_back(data);
+        }
       }
 
 

@@ -29,6 +29,7 @@ public:
 
   void setMap (cv::Mat map, double res, int colsImg);
   void update(objectsV imageData, std::vector<contour> mapData, Eje eje );
+  void updateMap(std::vector<contour> mapData);
   bool isSet(){ return set;}
 
   void draw();

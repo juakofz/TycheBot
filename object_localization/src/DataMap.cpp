@@ -55,6 +55,7 @@ void DataMap::update(objectsV imageData, std::vector<contour> mapData, Eje eje)
 
       objectShape shape;
       objectColor color;
+      std::cout<<"From update: "<<oclass<<std::endl;
       divideClass(oclass, shape, color);
       //objects.push_back(std::make_pair(Point2(cen, vec.getBase()), std::get<1>(imageData[i])));
       if(!visible && (lon > MINDIST) && shape != INDEFINIDO)
@@ -80,8 +81,26 @@ void DataMap::update(objectsV imageData, std::vector<contour> mapData, Eje eje)
   cv::imshow("Datos cruzados", dataActual);
   cv::waitKey(3);
 
-  clean();
+
   draw();
+};
+
+void DataMap::updateMap(std::vector<contour> mapData)
+{
+
+  for(int i = 0; i < mapData.size(); i++)
+  {
+
+    if(cv::contourArea(mapData[i]) > 75)
+    {
+      filtrar(mapData[i], OBSTACULO);
+    }
+    else
+    {
+      filtrar(mapData[i], INDEFINIDO_K);
+    }
+  }
+  clean();
 };
 
 void DataMap::draw()
@@ -93,6 +112,7 @@ void DataMap::draw()
     Point2 cen = it->first;
     objectShape shape;
     objectColor color;
+    std::cout<<"divide: "<<it->second<<std::endl;
     divideClass(it->second, shape, color);
     if(color == NEGRO) { color = BLANCO;}
     //cv::circle(data, cen.toCv(), 3, (155), 2);
@@ -102,9 +122,12 @@ void DataMap::draw()
     double area = cv::contourArea(shapeObjects[cen]);
     //putText(data, std::to_string(area), cv::Point(cen.getX(), cen.getY() + 10), FONT_HERSHEY_SIMPLEX, 0.3, Vec3b(255, 255, 255), 1);
 
-    cv::RotatedRect rect = cv::fitEllipse (shapeObjects[cen]);
-    double ratio = rect.size.width / rect.size.height;
-    //putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.3, Vec3b(255, 255, 255), 1);
+    if(shapeObjects[cen].size() >= 5)
+    {
+      cv::RotatedRect rect = cv::fitEllipse (shapeObjects[cen]);
+      double ratio = rect.size.width / rect.size.height;
+      //putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.3, Vec3b(255, 255, 255), 1);
+    }
   }
   cv::imshow("Datos historicos", data);
   cv::waitKey(3);
@@ -112,6 +135,7 @@ void DataMap::draw()
 
 void DataMap::filtrar(contour con, objectClass cls)
 {
+  std::cout<<"Filtrando "<<cls<<std::endl;
   double area = cv::contourArea(con);
   if(!(area > 50 && area < 70 && cls == OBSTACULO))
   {
@@ -152,17 +176,25 @@ void DataMap::filtrar(contour con, objectClass cls)
     {
       Point2 p(getCen(con), MUNDO);
       std::vector<objectClass> vectorObE;
-      std::vector<objectClass> vectorOb;
+      //std::vector<objectClass> vectorOb;
       allDatosHistL1[p] = vectorObE;
-      vectorOb.push_back(cls);
-      allDatosHistL2[p] = vectorOb;
+      //vectorOb.push_back(cls);
+      allDatosHistL2[p] = vectorObE;
       shapeObjects[p] = con;
+      addDato(p, cls);
+
+      if(cls == INDEFINIDO_K)
+      {
+        objects[p] = INDEFINIDO_K;
+      }
+
     }
   }
 };
 
 void DataMap::addDato(Point2 p, objectClass ob)
 {
+  std::cout<<"Adding "<<ob<<std::endl;
   if(allDatosHistL2.find(p) != allDatosHistL2.end())
   {
     if(allDatosHistL2[p].size() <= 10)
@@ -175,7 +207,15 @@ void DataMap::addDato(Point2 p, objectClass ob)
         allDatosHistL1[p].push_back(modaL2);
         allDatosHistL2[p].empty();
 
-        objects[p] = moda(allDatosHistL1[p]);
+    }
+
+    if(allDatosHistL1[p].size() == 0 && allDatosHistL2[p].size() != 0)
+    {
+      objects[p] = moda(allDatosHistL2[p]);
+    }
+    else if(allDatosHistL1[p].size() != 0)
+    {
+      objects[p] = moda(allDatosHistL1[p]);
     }
   }
   else
@@ -188,12 +228,14 @@ void DataMap::addDato(Point2 p, objectClass ob)
 
 objectClass DataMap::moda(std::vector<objectClass> vocls)
 {
-  objectClass obcls;
+  objectClass obcls = INDEFINIDO_K;
   int mayor = 0;
   std::map<objectClass, int> contMap;
   std::map<objectClass, int>::iterator it;
+  if(vocls.size() == 0) {std::cout<<"este vector no tiene tamaño"<<std::endl;}
   for(int i = 0; i<vocls.size(); i++)
   {
+
     it = contMap.find(vocls[i]);
     if(it != contMap.end())
     {
@@ -211,6 +253,7 @@ objectClass DataMap::moda(std::vector<objectClass> vocls)
 
 
   }
+  std::cout<<"moda: "<<obcls;
 
   return obcls;
 

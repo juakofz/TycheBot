@@ -65,9 +65,12 @@ class ImageRGB
   //image_transport::Publisher image_pub_;
   cv::Mat mapC; //contours
   cv::Mat mapRaw; // raw map
+  cv::Mat mapa;
 
   std::vector<contour> contornos;
   float resMap;
+  double xInitRobot;
+  double yInitRobot;
 
   //Data
   DataMap dataMap;

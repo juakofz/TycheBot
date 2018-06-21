@@ -138,7 +138,7 @@ std::vector<objectI> findObjects(objectColor colorName, Mat *src)
     putText(drawing, areaRStr.str(), Point(cx, cy + 20), FONT_HERSHEY_SIMPLEX, 0.3, color);
 
 
-    putText(drawing, to_str(result), Point(cx, cy + 30), FONT_HERSHEY_SIMPLEX, 0.3, color);
+    //putText(drawing, to_str(result), Point(cx, cy + 30), FONT_HERSHEY_SIMPLEX, 0.3, color);
 
     objectI ob = std::make_pair(contours[i], getClass(result, colorName));
     allObjects.push_back(ob);
@@ -196,7 +196,7 @@ objectShape identify(vector<Point> contour)
     result = S_OBSTACULO;
   }
 
-  if(rel < 0.3)
+  if(rel < 0.4)
   {
     result = AVION;
   }
@@ -307,8 +307,8 @@ objectsV processImg(Mat src, Mat *result)
   }
 
   Mat rMat = src.clone();
-  Mat uMat = src.clone();
-  Mat iMat = src.clone();
+  //Mat uMat = src.clone();
+  //Mat iMat = src.clone();
 
 
   for(int i = 0; i < objects.size(); i++)
@@ -330,13 +330,15 @@ objectsV processImg(Mat src, Mat *result)
     else
     {*/
       drawCon(&rMat, std::get<0>(objects[i]));
-      drawCon(&iMat, std::get<0>(objects[i]));
+      //drawCon(&iMat, std::get<0>(objects[i]));
       Moments m = moments(std::get<0>(objects[i]));
       int cx = m.m10 / m.m00;
       int cy = m.m01 / m.m00;
 
-      putText(rMat, to_str(std::get<1>(objects[i])), Point(cx, cy), FONT_HERSHEY_SIMPLEX, 0.75, Vec3b(255, 255, 255), 2);
-      putText(iMat, to_str(std::get<1>(objects[i])), Point(cx, cy), FONT_HERSHEY_SIMPLEX, 0.75, Vec3b(255, 255, 255), 2);
+      if(std::get<1>(objects[i]) == MONEDA || std::get<1>(objects[i]) == OBSTACULO)
+      {
+        putText(rMat, to_str(std::get<1>(objects[i])), Point(cx, cy), FONT_HERSHEY_SIMPLEX, 0.75, Vec3b(255, 255, 255), 2);
+      }//putText(iMat, to_str(std::get<1>(objects[i])), Point(cx, cy), FONT_HERSHEY_SIMPLEX, 0.75, Vec3b(255, 255, 255), 2);
 
     //}
   }
@@ -522,12 +524,9 @@ objectClass getClass(objectShape shape, objectColor color)
   {
     cls =  OBSTACULO;
   }
-  /*else if(shape == S_INDEFINIDO)
-  {
-    cls =  INDEFINIDO;
-  }*/
 
-  //std::cout<<"Clase obtenida es: "<<to_str(cls)<<std::endl;
+
+  std::cout<<"Clase obtenida es: "<<cls<<", "<<to_str(cls)<<std::endl;
   return cls;
 }
 
@@ -544,10 +543,17 @@ void divideClass(objectClass cls, objectShape &shape, objectColor &color)
     color = NEGRO;
   }
 
+  else if(cls == INDEFINIDO_K)
+  {
+    shape =  INDEFINIDO;
+    color = NEGRO;
+  }
+
   else
   {
     shape = (objectShape)((int)(cls / 3));
     color = (objectColor)((int)(cls % 3));
   }
+  //std::cout<<"De "<<cls<<"obtenemos "<<shape<<" y "<< color<<std::endl;
 
 }

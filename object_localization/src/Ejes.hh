@@ -8,8 +8,8 @@
 #include "funciones.hh"
 
 
-//#define FOV 0.5236
-#define FOV 0.49
+#define FOV 0.5236
+//#define FOV 0.49
 #define LVEW 10
 #define PCAM 0
 
