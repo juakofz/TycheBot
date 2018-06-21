@@ -5,6 +5,7 @@
 	<arg name="x_init_pose" default="0"/>
 	<arg name="y_init_pose" default="0"/>
 	<arg name="z_init_pose" default="0"/>
+	<arg name="yaw_init_pose" default="0"/>
 	<arg name="xacro_robot" default="tychebot.urdf.xacro"/>
 	<arg name="launch_robot_localization" default="false"/>
 	<arg name="launch_amcl_and_mapserver" default="false"/>
@@ -29,7 +30,7 @@
 
 		<!-- Spawner model into gazebo -->
 		<node name="urdf_spawner_summit_model" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-		 args="-x $(arg x_init_pose) -y $(arg y_init_pose) -z $(arg z_init_pose) -urdf -param robot_description -model $(arg id_robot)" />
+		 args="-x $(arg x_init_pose) -y $(arg y_init_pose) -z $(arg z_init_pose) -Y $(arg yaw_init_pose) -urdf -param robot_description -model $(arg id_robot)" />
 
 		<!-- start summit_xl_control nodes -->
 		<include file="$(find tychebot_common)/launch/control/tychebot_control.launch">

@@ -1,2 +1,2 @@
 geometry_msgs/Point pose
-objectType type
+uint8 type

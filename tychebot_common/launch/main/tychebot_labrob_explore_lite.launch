@@ -16,12 +16,19 @@
 	<arg name="gmapping_enabled" default="true"/>
 	<arg name="move_base_enabled" default="true"/>
 	<arg name="amcl_and_mapserver_enabled" default="false"/>
+	<arg name="explore_enabled" default="true"/>
+	<arg name="aruco_enabled" default="true"/>
+	<arg name="detection_enabled" default="true"/>
 
+	<!-- Launch robot, gazebo and rviz-->
 	<include file="$(find tychebot_common)/launch/simulation/tychebot_gazebo.launch">
 		<!-- general args -->
 		<arg name="launch_rviz" value="$(arg launch_rviz)"/>
 		<arg name="rviz_profile" value="$(arg rviz_profile)"/>
 		<arg name="gazebo_world" value="$(arg gazebo_world)"/>
+		<arg name="x_init_pose" value="8" />
+		<arg name="y_init_pose" value="-8" />
+		<arg name="yaw_init_pose" value="1.5708"/>
 		<arg name="aruco" value="$(arg aruco)"/>
 		<!-- robot_a args -->
 		<arg name="map_file" value="$(arg map_file)"/>
@@ -31,8 +38,15 @@
 		<arg name="amcl_and_mapserver_enabled" value="$(arg amcl_and_mapserver_enabled)"/>
 	</include>
 
+	<!-- Launch exploration node-->
 	<!--include file="$(find tychebot_common)/launch/navigation/exploration.launch"/-->
-	<include file="$(find tychebot_common)/launch/navigation/explore_lite.launch"/>
-	<include file="$(find tychebot_common)/launch/detection/aruco.launch"/>
+	<include if="$(arg explore_enabled)" file="$(find tychebot_common)/launch/navigation/explore_lite.launch"/>
+
+	<!-- Launch aruco node -->
+	<include if="$(arg aruco_enabled)" file="$(find tychebot_common)/launch/detection/aruco.launch"/>
+
+	<!-- Launch object detection -->
+	<node name="object_detection" pkg="object_localization" type="objectDetection" respawn="false" output="screen">
+	</node>
 
 </launch>

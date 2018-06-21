@@ -14,6 +14,7 @@
 	<arg name="x_init_pose" default="0" />
 	<arg name="y_init_pose" default="0" />
 	<arg name="z_init_pose" default="0" />
+	<arg name="yaw_init_pose" default="0"/>
 	<arg name="localization_enabled" default="true"/>
 	<arg name="gmapping_enabled" default="false"/>
 	<arg name="move_base_enabled" default="false"/>
@@ -27,6 +28,7 @@
 		<arg name="x_init_pose" value="$(arg x_init_pose)"/>
 		<arg name="y_init_pose" value="$(arg y_init_pose)"/>
 		<arg name="z_init_pose" value="$(arg z_init_pose)"/>
+		<arg name="yaw_init_pose" value="$(arg yaw_init_pose)"/>
 		<arg name="xacro_robot" value="$(arg xacro_robot)"/>
 		<arg name="launch_robot_localization" value="$(arg localization_enabled)"/>
 		<arg name="launch_amcl_and_mapserver" value="$(arg amcl_and_mapserver_enabled)"/>
@@ -50,6 +52,10 @@
 		<arg name="world" value="$(arg gazebo_world)"/>
 		<arg name="debug" value="$(arg debug)"/>
 	</include>
+
+	<!-- tf listener node -->
+	<node name="tychebot_tf_listener" pkg="tychebot_common" type="base_to_map_tf" respawn="true" output="screen">
+	</node>
 
 </launch>	
 	

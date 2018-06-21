@@ -25,12 +25,11 @@ int main(int argc, char **argv){
 	ros::Publisher publisher_cam;
 	publisher_cam = nh.advertise<geometry_msgs::Pose>("/tychebot/camera_to_map", 1);
 
-	std::cout << "TF listener started." << std::endl;
+	std::cout << "TF listener started. Waiting for transforms..." << std::endl;
 
 	bool rec = false;
 	while(!rec)
 	{
-		std::cout << "Waiting for transforms..." << std::endl;
 		bool rec1 = listener.waitForTransform(source_frameid, target_frameid_base, ros::Time(0), ros::Duration(3.0));
 		bool rec2 = listener.waitForTransform(source_frameid, target_frameid_cam, ros::Time(0), ros::Duration(3.0));
 		rec = (rec1 && rec2);
