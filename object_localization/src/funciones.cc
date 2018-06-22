@@ -204,7 +204,7 @@ objectShape identify(vector<Point> contour)
   return result;
 };
 
-std::string to_str(objectClass o)
+std::string to_str(const objectClass o)
 {
   std::string str;
   objectShape shape;
@@ -216,7 +216,7 @@ std::string to_str(objectClass o)
   return str;
 };
 
-std::string to_str(objectShape shape)
+std::string to_str(const objectShape shape)
 {
   std::string str;
   switch(shape)
@@ -526,7 +526,7 @@ objectClass getClass(objectShape shape, objectColor color)
   }
 
 
-  std::cout<<"Clase obtenida es: "<<cls<<", "<<to_str(cls)<<std::endl;
+  //td::cout<<"Clase obtenida es: "<<cls<<", "<<to_str(cls)<<std::endl;
   return cls;
 }
 

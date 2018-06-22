@@ -1,5 +1,6 @@
 
 #include "DataMap.hh"
+#define LEARNRATE 5
 
 void DataMap::setMap (cv::Mat map, double res, int colsImg_)
 {
@@ -55,7 +56,7 @@ void DataMap::update(objectsV imageData, std::vector<contour> mapData, Eje eje)
 
       objectShape shape;
       objectColor color;
-      std::cout<<"From update: "<<oclass<<std::endl;
+      //std::cout<<"From update: "<<oclass<<std::endl;
       divideClass(oclass, shape, color);
       //objects.push_back(std::make_pair(Point2(cen, vec.getBase()), std::get<1>(imageData[i])));
       if(!visible && (lon > MINDIST) && shape != INDEFINIDO)
@@ -105,6 +106,7 @@ void DataMap::updateMap(std::vector<contour> mapData)
 
 void DataMap::draw()
 {
+  data = cv::Mat::zeros(data.size(), CV_8UC3);
   centerObjV::iterator it;
   for(it = objects.begin(); it != objects.end(); it++)
   {
@@ -112,21 +114,22 @@ void DataMap::draw()
     Point2 cen = it->first;
     objectShape shape;
     objectColor color;
-    //std::cout<<"divide: "<<it->second<<std::endl;
+
     divideClass(it->second, shape, color);
+
     if(color == NEGRO) { color = BLANCO;}
     //cv::circle(data, cen.toCv(), 3, (155), 2);
-    putText(data, to_str(it->second), cen.toCv(), FONT_HERSHEY_SIMPLEX, 0.25, Vec3b(255, 255, 255), 1);
+    //putText(data, to_str(shape), cen.toCv(), FONT_HERSHEY_SIMPLEX, 0.25, Vec3b(255, 255, 255), 1);
     drawContours(data, vector<vector<Point> >(1, shapeObjects[cen]), -1, (getBGR(color) + getBGR(color)), 1);
 
     double area = cv::contourArea(shapeObjects[cen]);
-    //putText(data, std::to_string(area), cv::Point(cen.getX(), cen.getY() + 10), FONT_HERSHEY_SIMPLEX, 0.3, Vec3b(255, 255, 255), 1);
+    putText(data, std::to_string(area), cv::Point(cen.getX(), cen.getY() + 10), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
 
     if(shapeObjects[cen].size() >= 5)
     {
       cv::RotatedRect rect = cv::fitEllipse (shapeObjects[cen]);
       double ratio = rect.size.width / rect.size.height;
-      //putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.3, Vec3b(255, 255, 255), 1);
+      putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
     }
   }
   cv::imshow("Datos historicos", data);
@@ -195,33 +198,40 @@ void DataMap::filtrar(contour con, objectClass cls)
 void DataMap::addDato(Point2 p, objectClass ob)
 {
   //std::cout<<"Adding "<<ob<<std::endl;
-  if(allDatosHistL2.find(p) != allDatosHistL2.end())
+  if(!(ob == INDEFINIDO_K && (allDatosHistL2[p].size() == 0 || allDatosHistL1[p].size() == 0)))
   {
-    if(allDatosHistL2[p].size() <= 10)
+    if(allDatosHistL2.find(p) != allDatosHistL2.end())
     {
-      allDatosHistL2[p].push_back(ob);
+      if(allDatosHistL2[p].size() <= LEARNRATE)
+      {
+        allDatosHistL2[p].push_back(ob);
+      }
+      else
+      {
+          objectClass modaL2 = moda(allDatosHistL2[p]);
+          allDatosHistL1[p].push_back(modaL2);
+          allDatosHistL2[p].empty();
+
+      }
+
+      if(allDatosHistL1[p].size() == 0 && allDatosHistL2[p].size() != 0)
+      {
+        objects[p] = moda(allDatosHistL2[p]);
+      }
+      else if(allDatosHistL1[p].size() != 0)
+      {
+        objects[p] = moda(allDatosHistL1[p]);
+      }
     }
     else
     {
-        objectClass modaL2 = moda(allDatosHistL2[p]);
-        allDatosHistL1[p].push_back(modaL2);
-        allDatosHistL2[p].empty();
+      std::cout<<"Esto no deberia pasar...! tamano l1: "<<allDatosHistL1.size()<<" tamano l2: "<< allDatosHistL2.size()<<std::endl;
 
-    }
-
-    if(allDatosHistL1[p].size() == 0 && allDatosHistL2[p].size() != 0)
-    {
-      objects[p] = moda(allDatosHistL2[p]);
-    }
-    else if(allDatosHistL1[p].size() != 0)
-    {
-      objects[p] = moda(allDatosHistL1[p]);
     }
   }
   else
   {
-    std::cout<<"Esto no deberia pasar...! tamano l1: "<<allDatosHistL1.size()<<" tamano l2: "<< allDatosHistL2.size()<<std::endl;
-
+    //std::cout<<"Filtrada la obs de indefinido repetida"<<std::endl;
   }
 
 }
@@ -230,6 +240,7 @@ objectClass DataMap::moda(std::vector<objectClass> vocls)
 {
   objectClass obcls = INDEFINIDO_K;
   int mayor = 0;
+
   std::map<objectClass, int> contMap;
   std::map<objectClass, int>::iterator it;
   //if(vocls.size() == 0) {std::cout<<"este vector no tiene tamano"<<std::endl;}
@@ -280,7 +291,7 @@ void DataMap::clean()
         double result = pointPolygonTest(act, p.toCv(), false);
         if(result >= 0)
         {
-          std::cout<<"Contorno repetido..."<<std::endl;
+          //std::cout<<"Contorno repetido..."<<std::endl;
           vecDelete.push_back(p);
         }
       }
