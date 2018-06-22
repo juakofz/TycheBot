@@ -41,14 +41,12 @@
 #include <mutex>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <std_msgs/Bool.h>
 
 #include <explore/costmap_client.h>
 #include <explore/frontier_search.h>
@@ -68,16 +66,13 @@ public:
 
   void start();
   void stop();
-  void callback_goal_request(const std_msgs::Bool::ConstPtr& f_req);
-  void callback_explore_active(const std_msgs::Bool::ConstPtr& f_active);
-  ros::NodeHandle private_nh_;
 
 private:
   /**
    * @brief  Make a global plan
    */
-
   void makePlan();
+
   /**
    * @brief  Publish a frontiers as markers
    */
@@ -90,9 +85,9 @@ private:
 
   bool goalOnBlacklist(const geometry_msgs::Point& goal);
 
+  ros::NodeHandle private_nh_;
   ros::NodeHandle relative_nh_;
   ros::Publisher marker_array_publisher_;
-  ros::Publisher goal_publisher_;
   tf::TransformListener tf_listener_;
 
   Costmap2DClient costmap_client_;
@@ -112,11 +107,8 @@ private:
   double planner_frequency_;
   double potential_scale_, orientation_scale_, gain_scale_;
   ros::Duration progress_timeout_;
-  ros::Duration passive_timeout_;
   bool visualize_;
-  bool node_active_;
 };
-
 }
 
 #endif

@@ -36,6 +36,7 @@
  *********************************************************************/
 
 #include <explore/explore.h>
+
 #include <thread>
 
 inline static bool operator==(const geometry_msgs::Point& one,
@@ -47,9 +48,6 @@ inline static bool operator==(const geometry_msgs::Point& one,
   return dist < 0.01;
 }
 
-void callback_goal_request(const std_msgs::Bool::ConstPtr&);
-void callback_explore_active(const std_msgs::Bool::ConstPtr&);
-
 namespace explore
 {
 Explore::Explore()
@@ -60,13 +58,11 @@ Explore::Explore()
   , prev_distance_(0)
   , last_markers_count_(0)
 {
-  double timeout, passive_timeout;
+  double timeout;
   double min_frontier_size;
   private_nh_.param("planner_frequency", planner_frequency_, 1.0);
   private_nh_.param("progress_timeout", timeout, 30.0);
-  private_nh_.param("passive_timeout", passive_timeout, 5.0);
   progress_timeout_ = ros::Duration(timeout);
-  passive_timeout_ = ros::Duration(passive_timeout);
   private_nh_.param("visualize", visualize_, false);
   private_nh_.param("potential_scale", potential_scale_, 1e-3);
   private_nh_.param("orientation_scale", orientation_scale_, 0.0);
@@ -82,19 +78,12 @@ Explore::Explore()
         private_nh_.advertise<visualization_msgs::MarkerArray>("frontiers", 10);
   }
 
-  //Modifications: topics
-  goal_publisher_ = private_nh_.advertise<move_base_msgs::MoveBaseGoal>("goal_test", 10);
-
-  //Modifications: flags
-  node_active_ = false;
-  
-
-  ROS_INFO("Waiting to connect to move_base server POLLAS POLLAS POLLAS");
+  ROS_INFO("Waiting to connect to move_base server");
   move_base_client_.waitForServer();
-  ROS_INFO("Connected to move_base server. Waiting befor start...");
+  ROS_INFO("Connected to move_base server");
 
   exploring_timer_ =
-      relative_nh_.createTimer(ros::Duration(0.5 / planner_frequency_),
+      relative_nh_.createTimer(ros::Duration(1. / planner_frequency_),
                                [this](const ros::TimerEvent&) { makePlan(); });
 }
 
@@ -189,8 +178,6 @@ void Explore::visualizeFrontiers(
 
 void Explore::makePlan()
 {
-  ROS_INFO("Making plan...");
-
   // find frontiers
   auto pose = costmap_client_.getRobotPose();
   // get frontiers sorted according to cost
@@ -230,30 +217,13 @@ void Explore::makePlan()
     last_progress_ = ros::Time::now();
     prev_distance_ = frontier->min_distance;
   }
-
-  // if node is actively planning
-  if(node_active_)
-  {
-    // black list if we've made no progress for a long time
-    if (ros::Time::now() - last_progress_ > progress_timeout_) {
-      frontier_blacklist_.push_back(target_position);
-      ROS_WARN("Adding current goal to black list");
-      makePlan();
-      return;
-    }
+  // black list if we've made no progress for a long time
+  if (ros::Time::now() - last_progress_ > progress_timeout_) {
+    frontier_blacklist_.push_back(target_position);
+    ROS_DEBUG("Adding current goal to black list");
+    makePlan();
+    return;
   }
-
-  // if node is passively generating goals
-  else
-  {
-    // black list if we've made no progress for a long time
-    if (ros::Time::now() - last_progress_ > passive_timeout_) {
-      ROS_INFO("Generating new goal");
-      makePlan();
-      return;
-    }
-  }
-
 
   // we don't need to do anything if we still pursuing the same goal
   if (same_goal) {
@@ -266,16 +236,12 @@ void Explore::makePlan()
   goal.target_pose.pose.orientation.w = 1.;
   goal.target_pose.header.frame_id = costmap_client_.getGlobalFrameID();
   goal.target_pose.header.stamp = ros::Time::now();
-  
-  /*move_base_client_.sendGoal(
+  move_base_client_.sendGoal(
       goal, [this, target_position](
                 const actionlib::SimpleClientGoalState& status,
                 const move_base_msgs::MoveBaseResultConstPtr& result) {
         reachedGoal(status, result, target_position);
-      });*/
-
-  ROS_INFO("Publishing goal.");
-  goal_publisher_.publish(goal);
+      });
 }
 
 bool Explore::goalOnBlacklist(const geometry_msgs::Point& goal)
@@ -326,43 +292,16 @@ void Explore::stop()
   ROS_INFO("Exploration stopped.");
 }
 
-void Explore::callback_goal_request(const std_msgs::Bool::ConstPtr& f_req)
-{
-  ROS_INFO("Received goal request");
-  stop();
-  start();
-  makePlan();  
-}
-
-void Explore::callback_explore_active(const std_msgs::Bool::ConstPtr& f_active)
-{
-  if(f_active->data)
-    ROS_INFO("Exploration mode set to active");
-  else
-    ROS_INFO("Exploration mode set to passive");
-  node_active_ = f_active->data;  
-}
-
 }  // namespace explore
-
 
 int main(int argc, char** argv)
 {
-  std::cout << "ME CAGO EN MI PUTA VIDA HOSTIA COJONES" << std::endl;
   ros::init(argc, argv, "explore");
-
-  ros::Subscriber goal_requests_;
-  ros::Subscriber explore_active_;
-
-  explore::Explore explore_ob;
-
-  goal_requests_ = explore_ob.private_nh_.subscribe<std_msgs::Bool>("/explore/request", 10, &explore::Explore::callback_goal_request, &explore_ob);
-  explore_active_ = explore_ob.private_nh_.subscribe<std_msgs::Bool>("/explore/active_explore", 10, &explore::Explore::callback_explore_active, &explore_ob);
-  
   if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
                                      ros::console::levels::Debug)) {
     ros::console::notifyLoggerLevelsChanged();
   }
+  explore::Explore explore;
   ros::spin();
 
   return 0;
