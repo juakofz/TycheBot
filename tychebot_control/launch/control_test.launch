@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="tychebot_control" type="tychebot_control_test" respawn="false" name="tychebot_control_node" output="screen">
+	</node>
+</launch>

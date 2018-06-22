@@ -19,6 +19,7 @@
 	<arg name="explore_enabled" default="true"/>
 	<arg name="aruco_enabled" default="true"/>
 	<arg name="detection_enabled" default="true"/>
+	<arg name="control_enabled" default="true"/>
 
 	<!-- Launch robot, gazebo and rviz-->
 	<include file="$(find tychebot_common)/launch/simulation/tychebot_gazebo.launch">
@@ -40,7 +41,8 @@
 
 	<!-- Launch exploration node-->
 	<!--include file="$(find tychebot_common)/launch/navigation/exploration.launch"/-->
-	<include if="$(arg explore_enabled)" file="$(find tychebot_common)/launch/navigation/explore_lite.launch"/>
+	<!--include if="$(arg explore_enabled)" file="$(find tychebot_common)/launch/navigation/explore_lite.launch"/-->
+	<include if="$(arg explore_enabled)" file="$(find tychebot_common)/launch/navigation/explore_lite_test.launch"/>
 
 	<!-- Launch aruco node -->
 	<include if="$(arg aruco_enabled)" file="$(find tychebot_common)/launch/detection/aruco.launch"/>
@@ -48,5 +50,8 @@
 	<!-- Launch object detection -->
 	<node if="$(arg detection_enabled)" name="object_detection" pkg="object_localization" type="objectDetection" respawn="false" output="screen">
 	</node>
+
+	<!-- Launch control node -->
+	<include if="$(arg control_enabled)" file="$(find tychebot_control)/launch/control_test.launch"/>
 
 </launch>

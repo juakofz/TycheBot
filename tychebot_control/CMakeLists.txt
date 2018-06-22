@@ -57,7 +57,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
-  objectType.msg
   object.msg
   objectArray.msg
 )

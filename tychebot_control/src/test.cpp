@@ -46,6 +46,9 @@ int main(int argc, char **argv)
 	pub_move_base_goal = nh.advertise<move_base_msgs::MoveBaseActionGoal>("/tychebot/movebase/goal", 1);
 	pub_camera_pan = nh.advertise<std_msgs::Float64>("/tychebot/joint_pan_position_controller/command", 1);
 	
+	//tychebot_control::object test;
+	//test.type = 1;
+
 	//Main loop
 	while(ros::ok())
 	{

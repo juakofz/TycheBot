@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="explore_lite_test" type="explore_test" respawn="false" name="explore" output="screen">
+	  <param name="robot_base_frame" value="/tychebot_base_link"/>
+	  <param name="costmap_topic" value="/tychebot/map"/>
+	  <!--param name="costmap_updates_topic" value="/tychebot/move_base/global_costmap/costmap_updates"/-->
+	  <param name="visualize" value="true"/>
+	  <param name="planner_frequency" value="0.33"/>
+	  <param name="progress_timeout" value="30.0"/>
+	  <param name="passive_timeout" value="4.0"/>
+	  <param name="potential_scale" value="4.0"/>
+	  <param name="orientation_scale" value="0.0"/>
+	  <param name="gain_scale" value="1.0"/>
+	  <param name="transform_tolerance" value="0.3"/>
+	  <param name="min_frontier_size" value="0.75"/>
+	  <remap from="move_base" to="/tychebot/move_base"/>
+	</node>
+</launch>
