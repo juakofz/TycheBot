@@ -7,7 +7,7 @@
 using namespace std;
 using namespace cv;
 
-#define MINAREA 800
+#define MINAREA 500
 
 enum objectShape{
   AVION = 0,

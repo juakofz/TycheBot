@@ -71,6 +71,7 @@ void DataMap::update(objectsV imageData, std::vector<contour> mapData, Eje eje)
       eje.trasladar(&end);
       eje.trasladar(&ot);
 
+      //std::cout<<"i: "<<i<<", vec: "<<vec.getX()<<", "<<vec.getY()<<std::endl;
       cv::line(dataActual, ot.toCv(), end.toCv(),(150), 1);
     }
   }
@@ -119,17 +120,17 @@ void DataMap::draw()
 
     if(color == NEGRO) { color = BLANCO;}
     //cv::circle(data, cen.toCv(), 3, (155), 2);
-    //putText(data, to_str(shape), cen.toCv(), FONT_HERSHEY_SIMPLEX, 0.25, Vec3b(255, 255, 255), 1);
+    putText(data, to_str(shape), cen.toCv(), FONT_HERSHEY_SIMPLEX, 0.25, Vec3b(255, 255, 255), 1);
     drawContours(data, vector<vector<Point> >(1, shapeObjects[cen]), -1, (getBGR(color) + getBGR(color)), 1);
 
     double area = cv::contourArea(shapeObjects[cen]);
-    putText(data, std::to_string(area), cv::Point(cen.getX(), cen.getY() + 10), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
+    //putText(data, std::to_string(area), cv::Point(cen.getX(), cen.getY() + 10), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
 
     if(shapeObjects[cen].size() >= 5)
     {
       cv::RotatedRect rect = cv::fitEllipse (shapeObjects[cen]);
       double ratio = rect.size.width / rect.size.height;
-      putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
+    //  putText(data, std::to_string(ratio), cv::Point(cen.getX(), cen.getY() + 20), FONT_HERSHEY_SIMPLEX, 0.35, Vec3b(255, 255, 255), 1);
     }
   }
   cv::imshow("Datos historicos", data);
@@ -168,6 +169,7 @@ void DataMap::filtrar(contour con, objectClass cls)
         }
 
         else if( area > 50 && (cls == MONEDA || shape == BOTELLA)) ;
+        else if( area < 50 && (shape == AVION || shape == BICI)) ;
         else
         {
           addDato(it->first, cls);
@@ -198,8 +200,8 @@ void DataMap::filtrar(contour con, objectClass cls)
 void DataMap::addDato(Point2 p, objectClass ob)
 {
   //std::cout<<"Adding "<<ob<<std::endl;
-  if(!(ob == INDEFINIDO_K && (allDatosHistL2[p].size() == 0 || allDatosHistL1[p].size() == 0)))
-  {
+  //if(!(ob == INDEFINIDO_K && (allDatosHistL2[p].size() != 0 || allDatosHistL1[p].size() != 0)))
+  //{
     if(allDatosHistL2.find(p) != allDatosHistL2.end())
     {
       if(allDatosHistL2[p].size() <= LEARNRATE)
@@ -228,11 +230,11 @@ void DataMap::addDato(Point2 p, objectClass ob)
       std::cout<<"Esto no deberia pasar...! tamano l1: "<<allDatosHistL1.size()<<" tamano l2: "<< allDatosHistL2.size()<<std::endl;
 
     }
-  }
-  else
-  {
+  //}
+  //else
+//  {
     //std::cout<<"Filtrada la obs de indefinido repetida"<<std::endl;
-  }
+  //}
 
 }
 
@@ -251,11 +253,14 @@ objectClass DataMap::moda(std::vector<objectClass> vocls)
     it = contMap.find(vocls[i]);
     if(it != contMap.end())
     {
-      it->second += 1;
-      if(it->second > mayor)
+      if(it->first != INDEFINIDO_K)
       {
-        obcls = it->first;
-        mayor = it->second;
+        it->second += 1;
+        if(it->second > mayor)
+        {
+          obcls = vocls[i];
+          mayor = it->second;
+        }
       }
     }
     else

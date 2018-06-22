@@ -71,7 +71,8 @@ std::vector<objectI> findObjects(objectColor colorName, Mat *src)
 
   for(int i = contours.size() - 1; i >= 0; i--)
   {
-    if(cv::contourArea(contours[i]) < MINAREA)
+    cv::Rect rect = cv::boundingRect(contours[i]);
+    if(cv::contourArea(contours[i]) < MINAREA || rect.y > 270)
     {
       contours.erase(contours.begin() + i);
     }
