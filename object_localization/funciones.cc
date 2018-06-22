@@ -71,8 +71,7 @@ std::vector<objectI> findObjects(objectColor colorName, Mat *src)
 
   for(int i = contours.size() - 1; i >= 0; i--)
   {
-    cv::Rect rect = cv::boundingRect(contours[i]);
-    if(cv::contourArea(contours[i]) < MINAREA || rect.y > 270)
+    if(cv::contourArea(contours[i]) < MINAREA)
     {
       contours.erase(contours.begin() + i);
     }
@@ -205,7 +204,7 @@ objectShape identify(vector<Point> contour)
   return result;
 };
 
-std::string to_str(const objectClass o)
+std::string to_str(objectClass o)
 {
   std::string str;
   objectShape shape;
@@ -217,7 +216,7 @@ std::string to_str(const objectClass o)
   return str;
 };
 
-std::string to_str(const objectShape shape)
+std::string to_str(objectShape shape)
 {
   std::string str;
   switch(shape)
@@ -527,7 +526,7 @@ objectClass getClass(objectShape shape, objectColor color)
   }
 
 
-  //td::cout<<"Clase obtenida es: "<<cls<<", "<<to_str(cls)<<std::endl;
+  std::cout<<"Clase obtenida es: "<<cls<<", "<<to_str(cls)<<std::endl;
   return cls;
 }
 

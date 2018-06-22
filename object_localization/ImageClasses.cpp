@@ -43,25 +43,23 @@
               if(shape == INDEFINIDO )
               {
                 get<1>(objects[i]) = getClass(getObjectFromH(h, hs), color);
-                divideClass(get<1>(objects[i]), shape, color);
-                  if(shape == BOTELLA )//)|| get<1>(objects[i]) == BOAT)
-                  {
-                    if(((double)h/(double)w) >= 2.6)
-                    {
-                      get<1>(objects[i]) = getClass(BOTELLA, color);
-                    }
-                    else if(((double)h/(double)w) >= 1)
-                    {
-                      get<1>(objects[i]) = getClass(BARCO, color);
-                    }
-                    else
-                    {
-                      get<1>(objects[i]) = getClass(BICI, color);
-                    }
-                  }
               }
 
-
+                if(shape == BOTELLA )//)|| get<1>(objects[i]) == BOAT)
+                {
+                  if(((double)h/(double)w) >= 2.6)
+                  {
+                    get<1>(objects[i]) = getClass(BOTELLA, color);
+                  }
+                  else if(((double)h/(double)w) >= 1)
+                  {
+                    get<1>(objects[i]) = getClass(BARCO, color);
+                  }
+                  else
+                  {
+                    get<1>(objects[i]) = getClass(BICI, color);
+                  }
+                }
 
 
               //drawClassName(&regression, objects[i]);
