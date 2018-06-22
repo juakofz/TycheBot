@@ -112,7 +112,7 @@ void DataMap::draw()
     Point2 cen = it->first;
     objectShape shape;
     objectColor color;
-    std::cout<<"divide: "<<it->second<<std::endl;
+    //std::cout<<"divide: "<<it->second<<std::endl;
     divideClass(it->second, shape, color);
     if(color == NEGRO) { color = BLANCO;}
     //cv::circle(data, cen.toCv(), 3, (155), 2);
@@ -135,7 +135,7 @@ void DataMap::draw()
 
 void DataMap::filtrar(contour con, objectClass cls)
 {
-  std::cout<<"Filtrando "<<cls<<std::endl;
+  //std::cout<<"Filtrando "<<cls<<std::endl;
   double area = cv::contourArea(con);
   if(!(area > 50 && area < 70 && cls == OBSTACULO))
   {
@@ -194,7 +194,7 @@ void DataMap::filtrar(contour con, objectClass cls)
 
 void DataMap::addDato(Point2 p, objectClass ob)
 {
-  std::cout<<"Adding "<<ob<<std::endl;
+  //std::cout<<"Adding "<<ob<<std::endl;
   if(allDatosHistL2.find(p) != allDatosHistL2.end())
   {
     if(allDatosHistL2[p].size() <= 10)
@@ -232,10 +232,11 @@ objectClass DataMap::moda(std::vector<objectClass> vocls)
   int mayor = 0;
   std::map<objectClass, int> contMap;
   std::map<objectClass, int>::iterator it;
-  if(vocls.size() == 0) {std::cout<<"este vector no tiene tamaño"<<std::endl;}
+  //if(vocls.size() == 0) {std::cout<<"este vector no tiene tamano"<<std::endl;}
+  //std::cout<<"***Haciendo la moda de tamano: "<< vocls.size()<<std::endl;
   for(int i = 0; i<vocls.size(); i++)
   {
-
+    //std::cout<<   vocls[i] <<std::endl;
     it = contMap.find(vocls[i]);
     if(it != contMap.end())
     {
@@ -249,11 +250,15 @@ objectClass DataMap::moda(std::vector<objectClass> vocls)
     else
     {
       contMap[vocls[i]] = 1;
+      if(mayor == 0)
+      {
+        mayor = 1;
+        obcls = vocls[i];
+      }
     }
 
-
   }
-  std::cout<<"moda: "<<obcls;
+  //std::cout<<"moda: "<<obcls<<std::endl;
 
   return obcls;
 

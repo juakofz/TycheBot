@@ -1,6 +1,6 @@
 
 #include "ImageClasses.hh"
-#include "deteccion.hh"
+
 
     void ImageRGB::imageCbRGB(const sensor_msgs::ImageConstPtr& msg)
       {
@@ -185,7 +185,6 @@ void ImageRGB::tfCallback(const geometry_msgs::Pose::ConstPtr& tf)
   //std::cout<<"He oido: "<< tf->pose.pose.position.x<<std::endl;
   if(mapRaw.rows>0 && mapRaw.cols>0)
   {
-
     //gazebo_msgs::GetModelState modelstate;
     //gazebo_msgs::ModelState modelstate;
 
